@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { disposeCharDecoration, getCharDecoration } from "./decoration";
-import { doesStringMatch } from "./utils";
+import { isAlphabetic } from "./utils";
 
 interface CharPosition {
 	positions: number[];
@@ -13,6 +13,10 @@ interface CharColoring {
 interface WordWithIndex {
 	word: string;
 	startIndex: number;
+}
+
+interface WordWithIndexWithCompareFunc extends WordWithIndex {
+	compare: (charPos: number, cursorPos: number, actualPos: number) => boolean;
 }
 
 const getCurrentLine = () => {
@@ -99,87 +103,48 @@ const getCharPosToColor = (
 ): CharColoring[] => {
 	// for each word select index of char which should be colored
 	const result: CharColoring[] = [];
-	const wordsWithIndexes = getWordsWithIndexes(text).filter(s => doesStringMatch(s.word, ".", ",", " ", "") === false);
-
+	const wordsWithIndexes = getWordsWithIndexes(text);
+	if (wordsWithIndexes.length == 0) {
+		return [];
+	}
 	const wordsAfterCursor = wordsWithIndexes.filter((word) => word.startIndex > cursorPos);
 	const wordsBeforeCursor = wordsWithIndexes.filter((word) => word.startIndex + word.word.length < cursorPos);
 
-	console.log({ wordsWithIndexes });
-	console.log(`Words after cursor: ${wordsAfterCursor.map(w => w.word)}`);
-	console.log(`Words before cursor: ${wordsBeforeCursor.map(w => w.word)}`);
+	const before: WordWithIndexWithCompareFunc[] = wordsBeforeCursor.map(w => {
+		return { word: w.word, startIndex: w.startIndex, compare: (charPos, cursorPosition, actualPos) => charPos < cursorPosition && charPos >= actualPos }
+	})
+	const after: WordWithIndexWithCompareFunc[] = wordsAfterCursor.map(w => {
+		return { word: w.word, startIndex: w.startIndex, compare: (charPos, cursorPosition, actualPos) => charPos > cursorPosition && charPos <= actualPos }
+	})
 
-	for (const word of wordsBeforeCursor.reverse()) {
+	for (const word of before.reverse().concat(after)) {
 		result.push(
-			getCharColoringBefore(frequencyMap, word.word, word.startIndex, cursorPos)
+			getCharColoring(frequencyMap, word, cursorPos)
 		);
 	}
-
-	for (const word of wordsAfterCursor) {
-		result.push(
-			getCharColoring(frequencyMap, word.word, word.startIndex, cursorPos)
-		);
-	}
-
-	console.log("Char coloring map is", result)
 	return result.filter(w => w.position !== -1);
 };
 
-const getCharColoringBefore = (frequencyMap: Map<string, CharPosition>,
-	word: string,
-	startIndex: number,
-	cursorPos: number
-): CharColoring => {
-
-	let minFreqForChar = Number.MAX_VALUE;
-	let indexOfCharWithMinFreq = -1;
-
-	for (const [index, char] of word.split("").entries()) {
-
-		const mapHasChar = frequencyMap.has(char);
-		const actualPos = startIndex + index;
-
-		if (!mapHasChar) {
-			return { color: "red", position: actualPos }; // this char is okay to use to reach the word
-		}
-
-		const positions = frequencyMap.get(char);
-
-		const freq = positions!.positions.filter((p) => p < cursorPos && p >= actualPos).length; // all occurrences of the char after the cursor
-
-		if (freq === 0) {
-			return { color: "red", position: actualPos }; // this char is okay to use to reach the word
-		}
-
-		// we can not reach the word using this char with one jump so maybe it works with next char.
-		if (freq < minFreqForChar) {
-			minFreqForChar = freq;
-			indexOfCharWithMinFreq = actualPos;
-		}
-	}
-	return { color: "red", position: indexOfCharWithMinFreq };
-}
 const getCharColoring = (
 	frequencyMap: Map<string, CharPosition>,
-	word: string,
-	startIndex: number,
+	word: WordWithIndexWithCompareFunc,
 	cursorPos: number
 ): CharColoring => {
 
 	let minFreqForChar = Number.MAX_VALUE;
 	let indexOfCharWithMinFreq = -1;
 
-	for (const [index, char] of word.split("").entries()) {
+	for (const [index, char] of word.word.split("").entries()) {
 
 		const mapHasChar = frequencyMap.has(char);
-		const actualPos = startIndex + index;
+		const actualPos = word.startIndex + index;
 
 		if (!mapHasChar) {
 			return { color: "red", position: actualPos }; // this char is okay to use to reach the word
 		}
 
 		const positions = frequencyMap.get(char);
-
-		const freq = positions!.positions.filter((p) => p > cursorPos && p <= actualPos).length; // all occurrences of the char after the cursor
+		const freq = positions!.positions.filter(p => word.compare(p, cursorPos, actualPos)).length; // all occurrences of the char after the cursor
 
 		if (freq === 0) {
 			return { color: "red", position: actualPos }; // this char is okay to use to reach the word
@@ -191,11 +156,12 @@ const getCharColoring = (
 			indexOfCharWithMinFreq = actualPos;
 		}
 	}
-	return { color: "red", position: indexOfCharWithMinFreq };
-};
 
+	return { color: "red", position: indexOfCharWithMinFreq };
+
+}
 const getWordsWithIndexes = (text: string): WordWithIndex[] => {
-	return text.split(/([\s.,]+)/gi).reduce<{ word: string; startIndex: number }[]>(
+	const allWords = text.split(/(\W)/gi).reduce<{ word: string; startIndex: number }[]>(
 		(prev, currWord, index) => {
 			if (index === 0) {
 				prev.push({ word: currWord, startIndex: 0 });
@@ -208,6 +174,7 @@ const getWordsWithIndexes = (text: string): WordWithIndex[] => {
 		},
 		[]
 	);
+	return allWords.filter(word => isAlphabetic(word.word));
 };
 // returns for every char where it has been seen before
 const getCharFrequencyMap = (text: string) => {
