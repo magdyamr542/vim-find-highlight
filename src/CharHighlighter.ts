@@ -4,8 +4,8 @@ export interface CharPosition {
 	positions: number[];
 }
 export interface CharColoring {
-	color: string;
 	position: number;
+	minTimesToReach: number;
 }
 
 export interface WordWithIndex {
@@ -70,14 +70,14 @@ export class CharHighlighter implements ICharHighlighter {
 			const actualPos = word.startIndex + index;
 
 			if (!mapHasChar) {
-				return { color: "red", position: actualPos }; // this char is okay to use to reach the word
+				return { position: actualPos, minTimesToReach: 1 }; // this char is okay to use to reach the word
 			}
 
 			const positions = frequencyMap.get(char);
 			const freq = positions!.positions.filter(p => word.compare(p, cursorPos, actualPos)).length; // all occurrences of the char after the cursor
 
 			if (freq === 0) {
-				return { color: "red", position: actualPos }; // this char is okay to use to reach the word
+				return { position: actualPos, minTimesToReach: 1 }; // this char is okay to use to reach the word
 			}
 
 			// we can not reach the word using this char with one jump so maybe it works with next char.
@@ -87,7 +87,7 @@ export class CharHighlighter implements ICharHighlighter {
 			}
 		}
 
-		return { color: "red", position: indexOfCharWithMinFreq };
+		return { position: indexOfCharWithMinFreq, minTimesToReach: minFreqForChar };
 
 	}
 	private getWordsWithIndexes(text: string): WordWithIndex[] {
