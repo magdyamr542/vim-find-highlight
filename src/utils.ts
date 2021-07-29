@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { CharColoring } from "./CharHighlighter";
-import { getCharDecoration, getCharDecorationSecondColor } from "./decoration";
+import { DecorationConfig, disposeCharDecoration, getCharDecoration, getCharDecorationSecondColor } from "./decoration";
 
 export const isAlphabetic = (str: string) => {
 	const regex = /\w/gi
@@ -21,13 +21,14 @@ export const getCursorPos = () => {
 	return getActiveEditor()?.selection.active.character;
 };
 
-export const colorChars = (toColor: CharColoring[]) => {
+export const colorChars = (toColor: CharColoring[], decorationConfig: DecorationConfig) => {
 	const editor = getActiveEditor();
 	if (!editor) {
 		return;
 	}
 	const firstColorDecorations: vscode.DecorationOptions[] = []
 	const secondColorDecorations: vscode.DecorationOptions[] = []
+
 	const line = getCurrentLine()
 	for (const word of toColor) {
 		if (line) {
@@ -42,6 +43,6 @@ export const colorChars = (toColor: CharColoring[]) => {
 			console.log("No line return");
 		}
 	}
-	editor.setDecorations(getCharDecoration(), firstColorDecorations);
-	editor.setDecorations(getCharDecorationSecondColor(), secondColorDecorations);
+	editor.setDecorations(getCharDecoration(decorationConfig.firstColor), firstColorDecorations);
+	editor.setDecorations(getCharDecorationSecondColor(decorationConfig.secondColor), secondColorDecorations);
 }

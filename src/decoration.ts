@@ -11,22 +11,33 @@ export const disposeCharDecoration = () => {
 	charDecorationSecondColor = undefined;
 }
 
-export const getCharDecoration = () => {
+export const getCharDecoration = (color: string) => {
 	if (!charDecoration) {
 		charDecoration = vscode.window.createTextEditorDecorationType({
-			color: "red"
+			color,
 		})
 		return charDecoration;
 	}
 	return charDecoration;
 }
 
-export const getCharDecorationSecondColor = () => {
+export const getCharDecorationSecondColor = (color: string) => {
 	if (!charDecorationSecondColor) {
 		charDecorationSecondColor = vscode.window.createTextEditorDecorationType({
-			color: "yellow"
+			color
 		})
 		return charDecorationSecondColor;
 	}
 	return charDecorationSecondColor;
 }
+
+export class DecorationConfig {
+	public firstColor: string;
+	public secondColor: string;
+	constructor() {
+		this.firstColor = "red";
+		this.secondColor = "green";
+	}
+}
+
+export const decorationConfig = new DecorationConfig();

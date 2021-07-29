@@ -20,6 +20,7 @@ export interface WordWithIndexWithCompareFunc extends WordWithIndex {
 export interface ICharHighlighter {
 	getCharHighlighting: (lineText: string, cursorPos: number) => CharColoring[];
 }
+
 export class CharHighlighter implements ICharHighlighter {
 	public getCharHighlighting(lineText: string, cursorPos: number): CharColoring[] {
 		const frequencyMap = this.getCharFrequencyMap(lineText);
