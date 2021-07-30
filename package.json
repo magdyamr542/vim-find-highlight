@@ -12,7 +12,8 @@
   "activationEvents": [
     "onStartupFinished",
     "onCommand:extension.setHighlightPrimaryColor",
-    "onCommand:extension.setHighlightSecondaryColor"
+    "onCommand:extension.setHighlightPrimaryColor",
+    "onCommand:extension.setHighlightedCharFontWeight"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -24,6 +25,10 @@
       {
         "title": "Set Highlight Secondary Color",
         "command": "extension.setHighlightSecondaryColor"
+      },
+      {
+        "title": "Set Highlight Font Weight ",
+        "command": "extension.setHighlightedCharFontWeight"
       }
     ]
   },

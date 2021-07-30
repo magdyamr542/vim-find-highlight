@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { charHighlighter } from "./CharHighlighter";
+import { DEBOUNCE_TIMEOUT } from "./constants";
 import { decorationConfig, disposeCharDecoration } from "./decoration";
 import { colorChars, getCurrentLine, getCursorPos } from "./utils";
 
@@ -11,8 +12,17 @@ export function activate(context: vscode.ExtensionContext) {
 			clearTimeout(timeout);
 			timeout = undefined;
 		}
-		timeout = setTimeout(() => main(cursorPos, text), 500);
+		timeout = setTimeout(() => main(cursorPos, text), DEBOUNCE_TIMEOUT);
 	}
+
+	// register change font weight command
+	context.subscriptions.push(vscode.commands.registerCommand("extension.setHighlightedCharFontWeight", async e => {
+		const fontWeight = await vscode.window.showQuickPick(["100", "200", "300", "400", "500", "600", "700", "800", "900"], { placeHolder: "Enter a font weight for the highlighted char" })
+		if (fontWeight) {
+			decorationConfig.fontWeight = fontWeight;
+			disposeCharDecoration();
+		}
+	}))
 
 
 	// register change color commands

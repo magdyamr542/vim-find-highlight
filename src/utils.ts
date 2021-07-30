@@ -43,6 +43,6 @@ export const colorChars = (toColor: CharColoring[], decorationConfig: Decoration
 			console.log("No line return");
 		}
 	}
-	editor.setDecorations(getCharDecoration(decorationConfig.firstColor), firstColorDecorations);
-	editor.setDecorations(getCharDecorationSecondColor(decorationConfig.secondColor), secondColorDecorations);
+	editor.setDecorations(getCharDecoration(decorationConfig.firstColor, decorationConfig.fontWeight), firstColorDecorations);
+	editor.setDecorations(getCharDecorationSecondColor(decorationConfig.secondColor, decorationConfig.fontWeight), secondColorDecorations);
 }
