@@ -17,6 +17,11 @@ export interface WordWithIndexWithCompareFunc extends WordWithIndex {
 	compare: (charPos: number, cursorPos: number, actualPos: number) => boolean;
 }
 
+export interface LineWords {
+	beforeCursor: WordWithIndexWithCompareFunc[];
+	afterCursor: WordWithIndexWithCompareFunc[];
+}
+
 export interface ICharHighlighter {
 	getCharHighlighting: (lineText: string, cursorPos: number) => CharColoring[];
 }
@@ -34,21 +39,13 @@ export class CharHighlighter implements ICharHighlighter {
 	): CharColoring[] {
 		// for each word select index of char which should be colored
 		const result: CharColoring[] = [];
-		const wordsWithIndexes = this.getWordsWithIndexes(text);
-		if (wordsWithIndexes.length == 0) {
+		const { beforeCursor, afterCursor } = this.getWordsWithIndexes(text, cursorPos);
+		if (beforeCursor.length === 0 && afterCursor.length === 0) {
 			return [];
 		}
-		const wordsAfterCursor = wordsWithIndexes.filter((word) => word.startIndex > cursorPos);
-		const wordsBeforeCursor = wordsWithIndexes.filter((word) => word.startIndex + word.word.length < cursorPos);
 
-		const before: WordWithIndexWithCompareFunc[] = wordsBeforeCursor.map(w => {
-			return { word: w.word, startIndex: w.startIndex, compare: (charPos, cursorPosition, actualPos) => charPos < cursorPosition && charPos >= actualPos }
-		})
-		const after: WordWithIndexWithCompareFunc[] = wordsAfterCursor.map(w => {
-			return { word: w.word, startIndex: w.startIndex, compare: (charPos, cursorPosition, actualPos) => charPos > cursorPosition && charPos <= actualPos }
-		})
 
-		for (const word of before.reverse().concat(after)) {
+		for (const word of beforeCursor.reverse().concat(afterCursor)) {
 			result.push(
 				this.getCharColoring(frequencyMap, word, cursorPos)
 			);
@@ -91,21 +88,34 @@ export class CharHighlighter implements ICharHighlighter {
 		return { position: indexOfCharWithMinFreq, minTimesToReach: minFreqForChar };
 
 	}
-	private getWordsWithIndexes(text: string): WordWithIndex[] {
+	private getWordsWithIndexes(text: string, cursorPos: number): LineWords {
+		const result: LineWords = { beforeCursor: [], afterCursor: [] };
+
+		const insertWord = (word: WordWithIndex) => {
+			if (!isAlphabetic(word.word))
+				return;
+			if (word.startIndex > cursorPos) {
+				result.afterCursor.push({ ...word, compare: (charPos, cursorPosition, actualPos) => charPos > cursorPosition && charPos <= actualPos });
+			} else if (word.startIndex + word.word.length < cursorPos) {
+				result.beforeCursor.push({ ...word, compare: (charPos, cursorPosition, actualPos) => charPos < cursorPosition && charPos >= actualPos });
+			}
+		}
 		const notWordRegex = /(\W)/gi
-		const allWords = text.split(notWordRegex).reduce<WordWithIndex[]>(
+		text.split(notWordRegex).reduce<WordWithIndex[]>(
 			(prev, currWord, index) => {
 				if (index === 0) {
 					prev.push({ word: currWord, startIndex: 0 });
+					insertWord({ word: currWord, startIndex: 0 })
 					return prev;
 				}
 				const startIndex = prev[index - 1].startIndex + prev[index - 1].word.length;
 				prev.push({ word: currWord, startIndex });
+				insertWord({ word: currWord, startIndex })
 				return prev;
 			},
 			[]
 		);
-		return allWords.filter(word => isAlphabetic(word.word));
+		return result;
 	};
 	// returns for every char where it has been seen before
 	private getCharFrequencyMap(text: string) {
