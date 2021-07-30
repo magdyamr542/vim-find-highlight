@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import { CharColoring } from "./CharHighlighter";
-import { DecorationConfig, disposeCharDecoration, getCharDecoration, getCharDecorationSecondColor } from "./decoration";
+import { DecorationConfig, getCharDecoration, getCharDecorationSecondColor } from "./decoration";
 
 export const isAlphabetic = (str: string) => {
-	const regex = /\w/gi
-	return regex.test(str)
+	const wordRegex = /\w/gi
+	return wordRegex.test(str)
 }
 
 export const getCurrentLine = () => {
@@ -28,19 +28,19 @@ export const colorChars = (toColor: CharColoring[], decorationConfig: Decoration
 	}
 	const firstColorDecorations: vscode.DecorationOptions[] = []
 	const secondColorDecorations: vscode.DecorationOptions[] = []
+	const createPosition = (line: number, char: number) => new vscode.Position(line, char);
 
 	const line = getCurrentLine()
 	for (const word of toColor) {
 		if (line) {
-			const startPos = new vscode.Position(line.lineNumber, word.position)
-			const endPos = new vscode.Position(line.lineNumber, word.position + 1)
+			const startPos = createPosition(line.lineNumber, word.position);
+			const endPos = createPosition(line.lineNumber, word.position + 1);
+			const range = new vscode.Range(startPos, endPos);
 			if (word.minTimesToReach > 1) {
-				secondColorDecorations.push({ range: new vscode.Range(startPos, endPos) })
+				secondColorDecorations.push({ range })
 			} else {
-				firstColorDecorations.push({ range: new vscode.Range(startPos, endPos) })
+				firstColorDecorations.push({ range })
 			}
-		} else {
-			console.log("No line return");
 		}
 	}
 	editor.setDecorations(getCharDecoration(decorationConfig.firstColor, decorationConfig.fontWeight), firstColorDecorations);

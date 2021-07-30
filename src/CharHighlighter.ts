@@ -92,14 +92,14 @@ export class CharHighlighter implements ICharHighlighter {
 
 	}
 	private getWordsWithIndexes(text: string): WordWithIndex[] {
-		const allWords = text.split(/(\W)/gi).reduce<{ word: string; startIndex: number }[]>(
+		const notWordRegex = /(\W)/gi
+		const allWords = text.split(notWordRegex).reduce<WordWithIndex[]>(
 			(prev, currWord, index) => {
 				if (index === 0) {
 					prev.push({ word: currWord, startIndex: 0 });
 					return prev;
 				}
-				const startIndex =
-					prev[index - 1].startIndex + prev[index - 1].word.length;
+				const startIndex = prev[index - 1].startIndex + prev[index - 1].word.length;
 				prev.push({ word: currWord, startIndex });
 				return prev;
 			},
