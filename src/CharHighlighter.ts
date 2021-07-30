@@ -1,3 +1,4 @@
+import { DEFAULLT_MIN_TIMES_TO_REACH_WORD } from "./constants";
 import { isAlphabetic } from "./utils";
 
 export interface CharPosition {
@@ -43,8 +44,6 @@ export class CharHighlighter implements ICharHighlighter {
 		if (beforeCursor.length === 0 && afterCursor.length === 0) {
 			return [];
 		}
-
-
 		for (const word of beforeCursor.reverse().concat(afterCursor)) {
 			result.push(
 				this.getCharColoring(frequencyMap, word, cursorPos)
@@ -68,14 +67,14 @@ export class CharHighlighter implements ICharHighlighter {
 			const actualPos = word.startIndex + index;
 
 			if (!mapHasChar) {
-				return { position: actualPos, minTimesToReach: 1 }; // this char is okay to use to reach the word
+				return { position: actualPos, minTimesToReach: DEFAULLT_MIN_TIMES_TO_REACH_WORD }; // this char is okay to use to reach the word
 			}
 
 			const positions = frequencyMap.get(char);
 			const freq = positions!.positions.filter(p => word.compare(p, cursorPos, actualPos)).length; // all occurrences of the char after the cursor
 
 			if (freq === 0) {
-				return { position: actualPos, minTimesToReach: 1 }; // this char is okay to use to reach the word
+				return { position: actualPos, minTimesToReach: DEFAULLT_MIN_TIMES_TO_REACH_WORD }; // this char is okay to use to reach the word
 			}
 
 			// we can not reach the word using this char with one jump so maybe it works with next char.
