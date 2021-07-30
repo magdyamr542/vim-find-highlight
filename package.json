@@ -11,24 +11,45 @@
   ],
   "activationEvents": [
     "onStartupFinished",
-    "onCommand:extension.setHighlightPrimaryColor",
-    "onCommand:extension.setHighlightPrimaryColor",
-    "onCommand:extension.setHighlightedCharFontWeight"
+    "onCommand:extension.refreshConfigFromSettings"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "vimFindHighlight",
+      "properties": {
+        "vimFindHighlight.charPrimaryColor": {
+          "type": "string",
+          "default": "red",
+          "description": "The color of the char that can be reached with the f motion within one jump"
+        },
+        "vimFindHighlight.charSecondaryColor": {
+          "type": "string",
+          "default": "green",
+          "description": "The color of the char that can be reached with the f motion with more than one jump"
+        },
+        "vimFindHighlight.charFontWeight": {
+          "type": "string",
+          "default": "400",
+          "description": "The font weight of the char that can be reached with the f motion",
+          "enum": [
+            "100",
+            "200",
+            "300",
+            "400",
+            "500",
+            "600",
+            "700",
+            "800",
+            "900"
+          ]
+        }
+      }
+    },
     "commands": [
       {
-        "title": "Set Highlight Primary Color",
-        "command": "extension.setHighlightPrimaryColor"
-      },
-      {
-        "title": "Set Highlight Secondary Color",
-        "command": "extension.setHighlightSecondaryColor"
-      },
-      {
-        "title": "Set Highlight Font Weight ",
-        "command": "extension.setHighlightedCharFontWeight"
+        "title": "Refresh the char colors by reading settings.json",
+        "command": "extension.refreshConfigFromSettings"
       }
     ]
   },

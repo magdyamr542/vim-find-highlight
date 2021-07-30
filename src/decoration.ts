@@ -45,4 +45,14 @@ export class DecorationConfig {
 	}
 }
 
+export const updateDecorationConfig = () => {
+	const settings = vscode.workspace.getConfiguration()
+	const fontWeight = settings.get("vimFindHighlight.charFontWeight")
+	const primaryColor = settings.get("vimFindHighlight.charPrimaryColor")
+	const secondaryColor = settings.get("vimFindHighlight.charSecondaryColor")
+	decorationConfig.firstColor = primaryColor as string;
+	decorationConfig.secondColor = secondaryColor as string;
+	decorationConfig.fontWeight = fontWeight as string;
+}
+
 export const decorationConfig = new DecorationConfig();

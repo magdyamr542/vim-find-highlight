@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { charHighlighter } from "./CharHighlighter";
 import { DEBOUNCE_TIMEOUT } from "./constants";
-import { decorationConfig, disposeCharDecoration } from "./decoration";
+import { decorationConfig, disposeCharDecoration, updateDecorationConfig } from "./decoration";
 import { colorChars, getCurrentLine, getCursorPos } from "./utils";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -15,39 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
 		timeout = setTimeout(() => main(cursorPos, text), DEBOUNCE_TIMEOUT);
 	}
 
-	// register change font weight command
-	context.subscriptions.push(vscode.commands.registerCommand("extension.setHighlightedCharFontWeight", async e => {
-		const fontWeight = await vscode.window.showQuickPick(["100", "200", "300", "400", "500", "600", "700", "800", "900"], { placeHolder: "Enter a font weight for the highlighted char" })
-		if (fontWeight) {
-			decorationConfig.fontWeight = fontWeight;
-			disposeCharDecoration();
-		}
-	}))
-
-
-	// register change color commands
-	context.subscriptions.push(vscode.commands.registerCommand("extension.setHighlightPrimaryColor", async e => {
-		const color = await vscode.window.showInputBox({
-			placeHolder: "Enter a primary char highlight color",
-			value: decorationConfig.firstColor,
-		})
-		if (color) {
-			decorationConfig.firstColor = color;
-			disposeCharDecoration();
-		}
-	}))
-
-
-	// register change color commands
-	context.subscriptions.push(vscode.commands.registerCommand("extension.setHighlightSecondaryColor", async e => {
-		const color = await vscode.window.showInputBox({
-			placeHolder: "Enter a secondary char highlight color",
-			value: decorationConfig.secondColor
-		})
-		if (color) {
-			decorationConfig.secondColor = color;
-			disposeCharDecoration();
-		}
+	context.subscriptions.push(vscode.commands.registerCommand(("extension.refreshConfigFromSettings"), e => {
+		updateDecorationConfig();
+		disposeCharDecoration();
 	}))
 
 	// when the user types
