@@ -1,7 +1,8 @@
 {
   "name": "vim-find-highlight",
   "displayName": "vim-find-highlight",
-  "publisher" : "AmrMetwally",
+  "publisher": "AmrMetwally",
+  "icon": "./icon.jpeg",
   "description": "highlighting the chars to reach words with vim find command",
   "version": "0.0.1",
   "engines": {
