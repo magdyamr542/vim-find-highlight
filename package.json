@@ -6,7 +6,7 @@
     "url": "https://github.com/magdyamr542/vim-find-highlight"
   },
   "description": "highlighting the chars to reach words with vim find command",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.58.0"
   },
