@@ -2,7 +2,7 @@
 
 this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
 
-![example](./example.gif)
+![example](./images/example.gif)
 
 ## What does it do?
 
