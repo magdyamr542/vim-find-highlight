@@ -2,6 +2,7 @@
   "name": "vim-find-highlight",
   "displayName": "vim-find-highlight",
   "publisher": "AmrMetwally",
+  "icon": "./icon.jpg",
   "repository": {
     "url": "https://github.com/magdyamr542/vim-find-highlight"
   },
