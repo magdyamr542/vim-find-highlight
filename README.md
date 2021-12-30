@@ -10,10 +10,13 @@
 
 - this becomes a problem when there are multiple words in the line that contain the same characters that you use with the find command.
 
-- The main goal of the extension is to **highlight** a character in every word such that when using this character with the **find** command, you reach the word with as minimal steps as possible.
+  - `<cursorPos> const name = "tsr"` Note that you can only reach the string `"tsr"` with one jump by using the command `f r`.
 
-- This isn't always possible if the line contains repeated word. the extension can be configured to color the character with another color to indicate that the word cannot be reached with only one jump
-  - ex of such case: `test test`
+- The main goal of the extension is to **highlight** a character in every word such that when using this character with the **find** command, you reach the word with as minimal jumps as possible.
+
+- This isn't always possible if the line contains repeated words. the extension can be configured to color the character with another color to indicate that the word cannot be reached with only one jump
+  - Example of such case: `<cursorPos> test test`
+  - In this case the extension would highlight the character that enables you to go to the second `test` as quickly as possible. Here the character `e` will be highlighted (you need 2 jumps) instead of `t` (you need 3 jumps).
 
 ## Configuration
 
