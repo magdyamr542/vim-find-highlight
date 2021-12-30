@@ -1,4 +1,4 @@
-# Vim Find Highlight
+# Vim Find Highlight [https://marketplace.visualstudio.com/items?itemName=AmrMetwally.vim-find-highlight](market place)
 
 this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
 
