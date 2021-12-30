@@ -1,6 +1,6 @@
-# Vim Find Highlight [https://marketplace.visualstudio.com/items?itemName=AmrMetwally.vim-find-highlight](market place)
+# Vim Find Highlight
 
-this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
+- this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
 
 ![example](./images/example.gif)
 
@@ -26,6 +26,7 @@ this extension is inspired by [vim quick scope](https://github.com/unblevable/qu
 
 3. ` "vimFindHighlight.charFontWeight": "600" // font weight of the highlighted character`
 
-## Link
+## Links
 
-[github link](https://github.com/magdyamr542/vim-find-highlight)
+- [github link](https://github.com/magdyamr542/vim-find-highlight)
+- [vscode market place link](https://marketplace.visualstudio.com/items?itemName=AmrMetwally.vim-find-highlight)
