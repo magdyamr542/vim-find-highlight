@@ -29,6 +29,9 @@
 
 3. ` "vimFindHighlight.charFontWeight": "600" // font weight of the highlighted character`
 
+- Then open vscode command palette and execute the command `Refresh the char colors by reading settings.json`
+
+
 ## Links
 
 - [github link](https://github.com/magdyamr542/vim-find-highlight)
