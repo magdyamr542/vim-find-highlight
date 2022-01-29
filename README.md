@@ -2,7 +2,7 @@
 
 - this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
 
-![example](./images/example.gif)
+[![Screen-Recording-2022-01-29-at-1.gif](https://s10.gifyu.com/images/Screen-Recording-2022-01-29-at-1.gif)](https://gifyu.com/image/SbBPP)
 
 ## What does it do?
 
@@ -30,7 +30,6 @@
 3. ` "vimFindHighlight.charFontWeight": "600" // font weight of the highlighted character`
 
 - Then open vscode command palette and execute the command `Refresh the char colors by reading settings.json`
-
 
 ## Links
 
