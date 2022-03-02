@@ -2,7 +2,7 @@
 
 - this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
 
-[![Screen-Recording-2022-01-29-at-1.gif](https://s10.gifyu.com/images/Screen-Recording-2022-01-29-at-1.gif)](https://gifyu.com/image/SbBPP)
+[![ezgif.com-gif-maker8cdf10bf7aad79aa.gif](https://s7.gifyu.com/images/ezgif.com-gif-maker8cdf10bf7aad79aa.gif)](https://gifyu.com/image/SMhbp)
 
 ## What does it do?
 
