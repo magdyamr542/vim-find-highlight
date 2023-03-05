@@ -2,7 +2,7 @@
 
 - this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
 
-[![ezgif.com-gif-maker8cdf10bf7aad79aa.gif](https://s7.gifyu.com/images/ezgif.com-gif-maker8cdf10bf7aad79aa.gif)](https://gifyu.com/image/SMhbp)
+![showcase](./showcase.gif)
 
 ## What does it do?
 
@@ -20,16 +20,18 @@
 
 ## Configuration
 
-- The configuration is pretty simple and contains only three parameters
+- The configuration is simple
 - Go to `settings.json` and set the following
 
-1. ` "vimFindHighlight.charPrimaryColor": "green" // the color that will be used if the word can be reached with one jump`
+  1. ` "vimFindHighlight.charPrimaryColor": "green" // the color that will be used if the word can be reached with one jump`
 
-2. ` "vimFindHighlight.charSecondaryColor": "red" // the color that will be used if the word can not be reached with one jump`
+  2. ` "vimFindHighlight.charSecondaryColor": "red" // the color that will be used if the word can not be reached with one jump`
 
-3. ` "vimFindHighlight.charFontWeight": "600" // font weight of the highlighted character`
+  3. ` "vimFindHighlight.charFontWeight": "600" // font weight of the highlighted character`
 
-- Then open vscode command palette and execute the command `Refresh the char colors by reading settings.json`
+  4. ` "vimFindHighlight.enableUnderline": true // underline the highlighted characters`
+
+- Then open vscode command palette and execute the command `Refresh configuration from settings.json`
 
 ## Links
 

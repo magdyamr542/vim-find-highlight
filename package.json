@@ -48,12 +48,17 @@
             "800",
             "900"
           ]
+        },
+        "vimFindHighlight.enableUnderline": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, a line will be drawn under the highlighted characters"
         }
       }
     },
     "commands": [
       {
-        "title": "Refresh the char colors by reading settings.json",
+        "title": "Refresh configuration from settings.json",
         "command": "extension.refreshConfigFromSettings"
       }
     ]
