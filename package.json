@@ -7,7 +7,7 @@
     "url": "https://github.com/magdyamr542/vim-find-highlight"
   },
   "description": "highlighting the chars to reach words with vim find command",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.58.0"
   },
@@ -15,8 +15,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished",
-    "onCommand:extension.refreshConfigFromSettings"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -56,12 +55,7 @@
         }
       }
     },
-    "commands": [
-      {
-        "title": "Refresh configuration from settings.json",
-        "command": "extension.refreshConfigFromSettings"
-      }
-    ]
+    "commands": []
   },
   "scripts": {
     "vscode:prepublish": "npm run -S esbuild-base -- --minify",

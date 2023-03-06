@@ -31,8 +31,6 @@
 
   4. ` "vimFindHighlight.enableUnderline": true // underline the highlighted characters`
 
-- Then open vscode command palette and execute the command `Refresh configuration from settings.json`
-
 ## Links
 
 - [github link](https://github.com/magdyamr542/vim-find-highlight)

@@ -19,15 +19,6 @@ export function activate(context: vscode.ExtensionContext) {
     timeout = setTimeout(() => main(cursorPos, text), DEBOUNCE_TIMEOUT);
   };
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "extension.refreshConfigFromSettings",
-      (e) => {
-        configureDecoration();
-      }
-    )
-  );
-
   // when the user types
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((e) => {
@@ -54,6 +45,17 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // listen for configuration changes
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      const configChanged = e.affectsConfiguration('vimFindHighlight.charPrimaryColor') || e.affectsConfiguration('vimFindHighlight.charSecondaryColor') || e.affectsConfiguration('vimFindHighlight.charFontWeight') || e.affectsConfiguration('vimFindHighlight.enableUnderline');
+
+      if (configChanged) {
+        configureDecoration();
+      }
+    })
+  )
+
   // when activating the extension. read the user settings file first
   configureDecoration();
 }
@@ -69,4 +71,4 @@ const main = (cursorPos: number, currentLine: string) => {
 };
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
