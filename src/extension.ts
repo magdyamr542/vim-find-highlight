@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { charHighlighter } from "./CharHighlighter";
-import { DEBOUNCE_TIMEOUT } from "./constants";
 import {
   decorationConfig,
   disposeCharDecoration,
@@ -9,15 +8,6 @@ import {
 import { colorChars, getCurrentLine, getCursorPos } from "./utils";
 
 export function activate(context: vscode.ExtensionContext) {
-  let timeout: NodeJS.Timer | undefined = undefined;
-
-  const debouncedMain = (cursorPos: number, text: string) => {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = undefined;
-    }
-    timeout = setTimeout(() => main(cursorPos, text), DEBOUNCE_TIMEOUT);
-  };
 
   // when the user types
   context.subscriptions.push(
@@ -25,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
       const line = getCurrentLine();
       const cursorPos = getCursorPos();
       if (line?.text.length && cursorPos) {
-        debouncedMain(cursorPos, line.text);
+        main(cursorPos, line.text)
       } else {
         disposeCharDecoration();
       }
@@ -38,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
       const line = getCurrentLine();
       const cursorPos = e.textEditor.selection.active.character;
       if (line?.text.length) {
-        debouncedMain(cursorPos, line.text);
+        main(cursorPos, line.text);
       } else {
         disposeCharDecoration();
       }

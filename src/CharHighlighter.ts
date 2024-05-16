@@ -1,5 +1,3 @@
-import { DEFAULLT_MIN_TIMES_TO_REACH_WORD } from "./constants";
-
 const isAlphabetic = (str: string) => {
   const wordRegex = /\w/gi;
   return wordRegex.test(str);
@@ -75,8 +73,8 @@ export class CharHighlighter implements ICharHighlighter {
       if (!mapHasChar) {
         return {
           position: actualPos,
-          minTimesToReach: DEFAULLT_MIN_TIMES_TO_REACH_WORD,
-        }; // this char is okay to use to reach the word
+          minTimesToReach: 1,
+        }; // this char is okay to use to reach the word (single jump)
       }
 
       const positions = frequencyMap.get(char);
@@ -84,11 +82,11 @@ export class CharHighlighter implements ICharHighlighter {
         word.compare(p, cursorPos, actualPos)
       ).length; // all occurrences of the char after the cursor
 
-      if (freq === 0) {
+      if (freq <= 1) {
         return {
           position: actualPos,
-          minTimesToReach: DEFAULLT_MIN_TIMES_TO_REACH_WORD,
-        }; // this char is okay to use to reach the word
+          minTimesToReach: 1,
+        }; // this char is okay to use to reach the word (single jump)
       }
 
       // we can not reach the word using this char with one jump so maybe it works with next char.
