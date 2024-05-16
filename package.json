@@ -9,7 +9,7 @@
   "description": "highlighting the chars to reach words with vim find command",
   "version": "0.0.6",
   "engines": {
-    "vscode": "^1.58.0"
+    "vscode": "^1.89.0"
   },
   "categories": [
     "Other"
