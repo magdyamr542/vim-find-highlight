@@ -84,10 +84,10 @@ export class CharHighlighter implements ICharHighlighter {
         word.compare(p, cursorPos, actualPos)
       ).length; // all occurrences of the char after the cursor
 
-      if (freq === 0) {
+      if (freq <= 1) {
         return {
           position: actualPos,
-          minTimesToReach: DEFAULLT_MIN_TIMES_TO_REACH_WORD,
+          minTimesToReach: 1,
         }; // this char is okay to use to reach the word
       }
 
