@@ -32,14 +32,16 @@
   4. ` "vimFindHighlight.enableUnderline": true // underline the highlighted characters`
 
   5. `"vimFindHighlight.enableAutoHighlight": true // highlight characters automatically`
-  
+
 
 ## Commands
 
 This extension exposes two commands (accessible through the command palette):
 
 - `Vim Find Highlight: Toggle Auto Highlight`: Enables or disables the autohighlight setting described above.
+  - When remapping a shortcut to the command, use `vimFindHighlight.toggleAutoHighlight`
 - `Vim Find Highlight: Highlight Characters`: Force a highlight of jumpable characters. Useful when paired with `vimFindHighlight.enableAutoHighlight: false`.
+  - When remapping a shortcut to the command, use `vimFindHighlight.highlightCharacters`
 
 You can remap the `Highlight Characters` command either using VSCode native keyword shortcuts, or [vscode vim](https://github.com/VSCodeVim/Vim) KeyBindings.
 
