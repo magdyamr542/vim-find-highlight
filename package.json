@@ -52,10 +52,24 @@
           "type": "boolean",
           "default": true,
           "description": "If true, a line will be drawn under the highlighted characters"
+        },
+        "vimFindHighlight.enableAutoHighlight": {
+          "type": "boolean",
+          "default": true,
+          "description": "If true, the extension will automatically highlight the characters that can be reached with the f motion"
         }
       }
     },
-    "commands": []
+    "commands": [
+      {
+        "command": "vimFindHighlight.toggleAuthoHighlight",
+        "title": "Vim Find Highlight: Toggle Auto Highlight"
+      },
+      {
+        "command": "vimFindHighlight.highlightCharacters",
+        "title": "Vim Find Highlight: Highlight Characters"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run -S esbuild-base -- --minify",
