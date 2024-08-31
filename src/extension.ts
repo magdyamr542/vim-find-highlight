@@ -77,7 +77,7 @@ const main = (cursorPos: number, currentLine: string) => {
 };
 
 const registerCommands = (context: vscode.ExtensionContext) => {
-  const toggleCommand = "vimFindHighlight.toggleAuthoHighlight";
+  const toggleCommand = "vimFindHighlight.toggleAutoHighlight";
   context.subscriptions.push(
     vscode.commands.registerCommand(toggleCommand, toggleAutoHighlight)
   );
@@ -99,7 +99,7 @@ const highlightCharacters = () => {
 };
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
 
 export function toggleAutoHighlight() {
   const settings = vscode.workspace.getConfiguration();
@@ -113,7 +113,7 @@ export function toggleAutoHighlight() {
       vscode.ConfigurationTarget.Global
     )
     .then(
-      () => {},
+      () => { },
       (reason) =>
         vscode.window.showInformationMessage(
           "Failed to toggle auto highlight: " + reason

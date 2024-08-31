@@ -62,7 +62,7 @@
     },
     "commands": [
       {
-        "command": "vimFindHighlight.toggleAuthoHighlight",
+        "command": "vimFindHighlight.toggleAutoHighlight",
         "title": "Vim Find Highlight: Toggle Auto Highlight"
       },
       {
