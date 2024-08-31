@@ -13,6 +13,5 @@
   "editor.tabSize": 4,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  },
-  "vimFindHighlight.enableAutoHighlight": false
+  }
 }

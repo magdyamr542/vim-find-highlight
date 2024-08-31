@@ -63,11 +63,11 @@
     "commands": [
       {
         "command": "vimFindHighlight.toggleAuthoHighlight",
-        "title": "Toggle Auto Highlight"
+        "title": "Vim Find Highlight: Toggle Auto Highlight"
       },
       {
         "command": "vimFindHighlight.highlightCharacters",
-        "title": "Highlight Characters"
+        "title": "Vim Find Highlight: Highlight Characters"
       }
     ]
   },
