@@ -38,8 +38,8 @@
 
 This extension exposes two commands (accessible through the command palette):
 
-- `Toggle Auto Highlight`: Enables or disables the autohighlight setting described above.
-- `Highlight Characters`: Force a highlight of jumpable characters. Useful when paired with `vimFindHighlight.enableAutoHighlight: false`.
+- `Vim Find Highlight: Toggle Auto Highlight`: Enables or disables the autohighlight setting described above.
+- `Vim Find Highlight: Highlight Characters`: Force a highlight of jumpable characters. Useful when paired with `vimFindHighlight.enableAutoHighlight: false`.
 
 You can remap the `Highlight Characters` command either using VSCode native keyword shortcuts, or [vscode vim](https://github.com/VSCodeVim/Vim) KeyBindings.
 
