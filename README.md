@@ -53,6 +53,20 @@ This extension exposes two commands (accessible through the command palette):
 
 You can remap the `Highlight Characters` command either using VSCode native keyword shortcuts, or [vscode vim](https://github.com/VSCodeVim/Vim) KeyBindings.
 
+## Releasing
+
+Releases are published to the Marketplace automatically by the [`publish` workflow](./.github/workflows/publish.yml) when a `vX.Y.Z` tag is pushed:
+
+1. Bump `"version"` in `package.json` and commit it.
+2. Tag that commit and push the tag, e.g. for `0.0.11`:
+   ```sh
+   git tag v0.0.11
+   git push origin v0.0.11
+   ```
+3. The workflow checks that the tag matches `package.json`'s version, runs lint/tests, then runs `vsce publish`.
+
+Requires a `VSCE_PAT` repository secret (a Marketplace [Personal Access Token](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token)).
+
 ## Links
 
 - [github link](https://github.com/magdyamr542/vim-find-highlight)
