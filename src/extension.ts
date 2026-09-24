@@ -1,123 +1,72 @@
 import * as vscode from "vscode";
-import { charHighlighter } from "./CharHighlighter";
+import { charHighlighter } from "./charHighlighter";
+import { CONFIG_SECTION, getConfig, setEnableAutoHighlight } from "./config";
 import {
   decorationConfig,
   disposeCharDecoration,
   updateDecorationConfig,
 } from "./decoration";
-import { colorChars, getCurrentLine, getCursorPos } from "./utils";
+import {
+  colorChars,
+  getActiveEditor,
+  getCurrentLine,
+  getCursorPos,
+} from "./utils";
+
+const TOGGLE_COMMAND = "vimFindHighlight.toggleAutoHighlight";
+const HIGHLIGHT_COMMAND = "vimFindHighlight.highlightCharacters";
+
+let autoHighlightEnabled = true;
 
 export function activate(context: vscode.ExtensionContext) {
-  let autoHighlight = configureAutoHighlight();
+  updateDecorationConfig();
+  autoHighlightEnabled = getConfig().enableAutoHighlight;
 
-  // when the user types
   context.subscriptions.push(
-    vscode.workspace.onDidChangeTextDocument((e) => {
-      const line = getCurrentLine();
-      const cursorPos = getCursorPos();
-      if (line?.text.length && cursorPos != undefined && autoHighlight) {
-        main(cursorPos, line.text);
-      } else {
-        disposeCharDecoration();
+    vscode.workspace.onDidChangeTextDocument(() => {
+      if (autoHighlightEnabled) {
+        refreshHighlighting();
       }
-    })
-  );
-
-  // when the cursor moves
-  context.subscriptions.push(
-    vscode.window.onDidChangeTextEditorSelection((e) => {
-      const line = getCurrentLine();
-      const cursorPos = e.textEditor.selection.active.character;
-      if (line?.text.length && autoHighlight) {
-        main(cursorPos, line.text);
-      } else {
-        disposeCharDecoration();
+    }),
+    vscode.window.onDidChangeTextEditorSelection(() => {
+      if (autoHighlightEnabled) {
+        refreshHighlighting();
       }
-    })
-  );
-
-  // listen for configuration changes
-  context.subscriptions.push(
+    }),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      const configChanged =
-        e.affectsConfiguration("vimFindHighlight.charPrimaryColor") ||
-        e.affectsConfiguration("vimFindHighlight.charSecondaryColor") ||
-        e.affectsConfiguration("vimFindHighlight.charFontWeight") ||
-        e.affectsConfiguration("vimFindHighlight.enableUnderline") ||
-        e.affectsConfiguration("vimFindHighlight.enableAutoHighlight");
-
-      if (configChanged) {
-        configureDecoration();
-        autoHighlight = configureAutoHighlight();
+      if (e.affectsConfiguration(CONFIG_SECTION)) {
+        updateDecorationConfig();
+        disposeCharDecoration();
+        autoHighlightEnabled = getConfig().enableAutoHighlight;
       }
-    })
+    }),
+    vscode.commands.registerCommand(TOGGLE_COMMAND, toggleAutoHighlight),
+    vscode.commands.registerCommand(HIGHLIGHT_COMMAND, refreshHighlighting),
   );
-
-  // when activating the extension. read the user settings file first and register the commands
-  configureDecoration();
-  registerCommands(context);
 }
 
-const configureDecoration = () => {
-  updateDecorationConfig();
-  disposeCharDecoration();
-};
+export function deactivate() {}
 
-const configureAutoHighlight = (): boolean => {
-  const settings = vscode.workspace.getConfiguration();
-  const autoHighlight = settings.get(
-    "vimFindHighlight.enableAutoHighlight"
-  ) as boolean;
-  return autoHighlight;
-};
+function refreshHighlighting() {
+  const editor = getActiveEditor();
+  const line = getCurrentLine(editor);
+  const cursorPos = getCursorPos(editor);
 
-const main = (cursorPos: number, currentLine: string) => {
-  const toColor = charHighlighter.getCharHighlighting(currentLine, cursorPos);
-  colorChars(toColor, decorationConfig);
-};
-
-const registerCommands = (context: vscode.ExtensionContext) => {
-  const toggleCommand = "vimFindHighlight.toggleAutoHighlight";
-  context.subscriptions.push(
-    vscode.commands.registerCommand(toggleCommand, toggleAutoHighlight)
-  );
-
-  const highlightCommand = "vimFindHighlight.highlightCharacters";
-  context.subscriptions.push(
-    vscode.commands.registerCommand(highlightCommand, highlightCharacters)
-  );
-};
-
-const highlightCharacters = () => {
-  const line = getCurrentLine();
-  const cursorPos = getCursorPos();
-  if (line?.text.length && cursorPos != undefined) {
-    main(cursorPos, line.text);
-  } else {
+  if (!editor || !line?.text.length || cursorPos === undefined) {
     disposeCharDecoration();
+    return;
   }
-};
 
-// this method is called when your extension is deactivated
-export function deactivate() { }
+  const toColor = charHighlighter.getCharHighlighting(line.text, cursorPos);
+  colorChars(editor, line, toColor, decorationConfig);
+}
 
-export function toggleAutoHighlight() {
-  const settings = vscode.workspace.getConfiguration();
-  const autoHighlight = settings.get(
-    "vimFindHighlight.enableAutoHighlight"
-  ) as boolean;
-  settings
-    .update(
-      "vimFindHighlight.enableAutoHighlight",
-      !autoHighlight,
-      vscode.ConfigurationTarget.Global
-    )
-    .then(
-      () => { },
-      (reason) =>
-        vscode.window.showInformationMessage(
-          "Failed to toggle auto highlight: " + reason
-        )
-    );
-  highlightCharacters();
+function toggleAutoHighlight() {
+  const newValue = !getConfig().enableAutoHighlight;
+  setEnableAutoHighlight(newValue).then(undefined, (reason) =>
+    vscode.window.showInformationMessage(
+      "Failed to toggle auto highlight: " + reason,
+    ),
+  );
+  refreshHighlighting();
 }

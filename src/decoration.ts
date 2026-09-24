@@ -1,74 +1,51 @@
 import * as vscode from "vscode";
-import {
-  CHAR_FONTWEIGHT,
-  CHAR_PRIMARY_COLOR,
-  CHAR_SECONDARY_COLOR,
-} from "./constants";
+import { getConfig } from "./config";
 
-let charDecoration: vscode.TextEditorDecorationType | undefined;
-let charDecorationSecondColor: vscode.TextEditorDecorationType | undefined;
+export type DecorationKind = "primary" | "secondary";
+
+export class DecorationConfig {
+  public firstColor = "red";
+  public secondColor = "green";
+  public fontWeight = "400";
+  public underline = true;
+}
+
+export const decorationConfig = new DecorationConfig();
+
+const decorationTypes = new Map<
+  DecorationKind,
+  vscode.TextEditorDecorationType
+>();
 
 export const disposeCharDecoration = () => {
-  charDecoration && charDecoration.dispose();
-  charDecorationSecondColor && charDecorationSecondColor.dispose();
-  charDecoration = undefined;
-  charDecorationSecondColor = undefined;
+  for (const decoration of decorationTypes.values()) {
+    decoration.dispose();
+  }
+  decorationTypes.clear();
 };
 
 export const getCharDecoration = (
+  kind: DecorationKind,
   color: string,
   fontWeight: string,
-  underline: boolean
+  underline: boolean,
 ): vscode.TextEditorDecorationType => {
-  if (!charDecoration) {
-    charDecoration = vscode.window.createTextEditorDecorationType({
-      color,
-      fontWeight: fontWeight,
-      textDecoration: underline === true ? "underline" : undefined,
-    });
-  }
-
-  return charDecoration;
-};
-
-export const getCharDecorationSecondColor = (
-  color: string,
-  fontWeight: string,
-  underline: boolean
-) => {
-  if (!charDecorationSecondColor) {
-    charDecorationSecondColor = vscode.window.createTextEditorDecorationType({
+  let decoration = decorationTypes.get(kind);
+  if (!decoration) {
+    decoration = vscode.window.createTextEditorDecorationType({
       color,
       fontWeight,
-      textDecoration: underline === true ? "underline" : undefined,
+      textDecoration: underline ? "underline" : undefined,
     });
+    decorationTypes.set(kind, decoration);
   }
-  return charDecorationSecondColor;
+  return decoration;
 };
-
-export class DecorationConfig {
-  public firstColor: string;
-  public secondColor: string;
-  public fontWeight: string;
-  public underline: boolean;
-  constructor() {
-    this.firstColor = CHAR_PRIMARY_COLOR;
-    this.secondColor = CHAR_SECONDARY_COLOR;
-    this.fontWeight = CHAR_FONTWEIGHT;
-    this.underline = true;
-  }
-}
 
 export const updateDecorationConfig = () => {
-  const settings = vscode.workspace.getConfiguration();
-  const fontWeight = settings.get("vimFindHighlight.charFontWeight");
-  const primaryColor = settings.get("vimFindHighlight.charPrimaryColor");
-  const secondaryColor = settings.get("vimFindHighlight.charSecondaryColor");
-  const underline = settings.get("vimFindHighlight.enableUnderline");
-  decorationConfig.firstColor = primaryColor as string;
-  decorationConfig.secondColor = secondaryColor as string;
-  decorationConfig.fontWeight = fontWeight as string;
-  decorationConfig.underline = underline as boolean;
+  const config = getConfig();
+  decorationConfig.fontWeight = config.charFontWeight;
+  decorationConfig.firstColor = config.charPrimaryColor;
+  decorationConfig.secondColor = config.charSecondaryColor;
+  decorationConfig.underline = config.enableUnderline;
 };
-
-export const decorationConfig = new DecorationConfig();

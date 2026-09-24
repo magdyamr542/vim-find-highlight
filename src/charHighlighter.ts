@@ -1,35 +1,61 @@
-const isAlphabetic = (str: string) => {
-  const wordRegex = /\w/gi;
-  return wordRegex.test(str);
-};
+const WORD_CHAR_REGEX = /\w/;
+const NON_WORD_CHAR_REGEX = /(\W)/gi;
+
+// a "word" here just needs at least one word character (e.g. "3" or "_" counts)
+const containsWordChar = (str: string) => WORD_CHAR_REGEX.test(str);
 
 export interface CharPosition {
-  positions: number[];
+  positions: number[]; // ascending, since built by scanning the line left to right
 }
 export interface CharColoring {
   position: number;
   minTimesToReach: number;
 }
 
+export type WordDirection = "before" | "after";
+
 export interface WordWithIndex {
   word: string;
   startIndex: number;
 }
 
-export interface WordWithIndexWithCompareFunc extends WordWithIndex {
-  compare: (charPos: number, cursorPos: number, actualPos: number) => boolean;
+export interface DirectedWord extends WordWithIndex {
+  direction: WordDirection;
 }
 
 export interface LineWords {
-  beforeCursor: WordWithIndexWithCompareFunc[];
-  afterCursor: WordWithIndexWithCompareFunc[];
+  beforeCursor: DirectedWord[];
+  afterCursor: DirectedWord[];
 }
 
-export interface ICharHighlighter {
-  getCharHighlighting: (lineText: string, cursorPos: number) => CharColoring[];
-}
+// counts how many entries of a sorted (ascending) array fall within [low, high]
+const countInRange = (
+  sortedPositions: number[],
+  low: number,
+  high: number
+): number => {
+  if (low > high) {
+    return 0;
+  }
+  return lowerBound(sortedPositions, high + 1) - lowerBound(sortedPositions, low);
+};
 
-export class CharHighlighter implements ICharHighlighter {
+// index of the first element >= target (binary search)
+const lowerBound = (sortedValues: number[], target: number): number => {
+  let low = 0;
+  let high = sortedValues.length;
+  while (low < high) {
+    const mid = (low + high) >>> 1;
+    if (sortedValues[mid] < target) {
+      low = mid + 1;
+    } else {
+      high = mid;
+    }
+  }
+  return low;
+};
+
+export class CharHighlighter {
   public getCharHighlighting(
     lineText: string,
     cursorPos: number
@@ -58,29 +84,39 @@ export class CharHighlighter implements ICharHighlighter {
     return result.filter((w) => w.position !== -1);
   }
 
+  // range (inclusive) of positions that count as "reachable in one jump" for this word,
+  // relative to the cursor, depending on which side of the cursor the word sits on
+  private getReachableRange(
+    word: DirectedWord,
+    cursorPos: number,
+    actualPos: number
+  ): [low: number, high: number] {
+    return word.direction === "before"
+      ? [actualPos, cursorPos - 1]
+      : [cursorPos + 1, actualPos];
+  }
+
   private getCharColoring(
     frequencyMap: Map<string, CharPosition>,
-    word: WordWithIndexWithCompareFunc,
+    word: DirectedWord,
     cursorPos: number
   ): CharColoring {
     let minFreqForChar = Number.MAX_VALUE;
     let indexOfCharWithMinFreq = -1;
 
     for (const [index, char] of word.word.split("").entries()) {
-      const mapHasChar = frequencyMap.has(char);
+      const charPosition = frequencyMap.get(char);
       const actualPos = word.startIndex + index;
 
-      if (!mapHasChar) {
+      if (!charPosition) {
         return {
           position: actualPos,
           minTimesToReach: 1,
         }; // this char is okay to use to reach the word (single jump)
       }
 
-      const positions = frequencyMap.get(char);
-      const freq = positions!.positions.filter((p) =>
-        word.compare(p, cursorPos, actualPos)
-      ).length; // all occurrences of the char after the cursor
+      const [low, high] = this.getReachableRange(word, cursorPos, actualPos);
+      const freq = countInRange(charPosition.positions, low, high); // all occurrences reachable from the cursor in one jump
 
       if (freq <= 1) {
         return {
@@ -101,54 +137,41 @@ export class CharHighlighter implements ICharHighlighter {
       minTimesToReach: minFreqForChar,
     };
   }
+
   private getWordsWithIndexes(text: string, cursorPos: number): LineWords {
     const result: LineWords = { beforeCursor: [], afterCursor: [] };
 
     const insertWord = (word: WordWithIndex) => {
-      if (!isAlphabetic(word.word)) {
+      if (!containsWordChar(word.word)) {
         return;
       }
       if (word.startIndex > cursorPos) {
-        result.afterCursor.push({
-          ...word,
-          compare: (charPos, cursorPosition, actualPos) =>
-            charPos > cursorPosition && charPos <= actualPos,
-        });
+        result.afterCursor.push({ ...word, direction: "after" });
       } else if (word.startIndex + word.word.length < cursorPos) {
-        result.beforeCursor.push({
-          ...word,
-          compare: (charPos, cursorPosition, actualPos) =>
-            charPos < cursorPosition && charPos >= actualPos,
-        });
+        result.beforeCursor.push({ ...word, direction: "before" });
       }
     };
-    const notWordRegex = /(\W)/gi;
-    text
-      .split(notWordRegex)
-      .reduce<WordWithIndex[]>((prev, currWord, index) => {
-        if (index === 0) {
-          prev.push({ word: currWord, startIndex: 0 });
-          insertWord({ word: currWord, startIndex: 0 });
-          return prev;
-        }
-        const startIndex =
-          prev[index - 1].startIndex + prev[index - 1].word.length;
-        prev.push({ word: currWord, startIndex });
-        insertWord({ word: currWord, startIndex });
-        return prev;
-      }, []);
+
+    let startIndex = 0;
+    for (const token of text.split(NON_WORD_CHAR_REGEX)) {
+      insertWord({ word: token, startIndex });
+      startIndex += token.length;
+    }
+
     return result;
   }
-  // returns for every char where it has been seen before
-  private getCharFrequencyMap(text: string) {
+
+  // returns for every char the (ascending) positions it has been seen at
+  private getCharFrequencyMap(text: string): Map<string, CharPosition> {
     const map: Map<string, CharPosition> = new Map();
-    text.split("").forEach((char, index) => {
-      if (map.has(char)) {
-        map.set(char, { positions: [...map.get(char)!.positions, index] });
+    for (const [index, char] of text.split("").entries()) {
+      const existing = map.get(char);
+      if (existing) {
+        existing.positions.push(index);
       } else {
         map.set(char, { positions: [index] });
       }
-    });
+    }
     return map;
   }
 }
