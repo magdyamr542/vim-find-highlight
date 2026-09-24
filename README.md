@@ -1,8 +1,16 @@
 # Vim Find Highlight
 
+[![CI](https://github.com/magdyamr542/vim-find-highlight/actions/workflows/ci.yml/badge.svg)](https://github.com/magdyamr542/vim-find-highlight/actions/workflows/ci.yml)
+
 - this extension is inspired by [vim quick scope](https://github.com/unblevable/quick-scope)
 
 ![showcase](./showcase.gif)
+
+## Install
+
+- From within VS Code: open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`), search for `Vim Find Highlight`, and install.
+- Or via the command line: `code --install-extension AmrMetwally.vim-find-highlight`
+- Or from the [marketplace page](https://marketplace.visualstudio.com/items?itemName=AmrMetwally.vim-find-highlight).
 
 ## What does it do?
 
@@ -21,11 +29,11 @@
 ## Configuration
 
 - The configuration is simple
-- Go to `settings.json` and set the following
+- Go to `settings.json` and set the following (values shown below are the defaults)
 
-  1. ` "vimFindHighlight.charPrimaryColor": "green" // the color that will be used if the word can be reached with one jump`
+  1. ` "vimFindHighlight.charPrimaryColor": "red" // the color that will be used if the word can be reached with one jump`
 
-  2. ` "vimFindHighlight.charSecondaryColor": "red" // the color that will be used if the word can not be reached with one jump`
+  2. ` "vimFindHighlight.charSecondaryColor": "green" // the color that will be used if the word can not be reached with one jump`
 
   3. ` "vimFindHighlight.charFontWeight": "600" // font weight of the highlighted character`
 
